@@ -6,4 +6,18 @@
                 type="Triplewood\CacheOptimizer\Plugin\ResponsePlugin"
                 sortOrder="10" />
     </type>
+    <type name="Triplewood\CacheOptimizer\Plugin\ResponsePlugin">
+        <arguments>
+            <argument name="whitelistedUrls" xsi:type="array">
+                <item name="catalog" xsi:type="array">
+                    <item name="moduleAction" xsi:type="string">view</item>
+                    <item name="enabled" xsi:type="boolean">true</item>
+                </item>
+                <item name="cms" xsi:type="array">
+                    <item name="moduleAction" xsi:type="string">view</item>
+                    <item name="enabled" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
 </config>
