@@ -15,22 +15,12 @@ use Magento\Framework\App\RouterListInterface;
 
 class ResponsePlugin
 {
-    private const WHITELISTED_URLS = [
-        [
-            'moduleName' => 'catalog',
-            'moduleAction' => 'view',
-        ],
-        [
-            'moduleName' => 'cms',
-            'moduleAction' => 'view',
-        ]
-    ];
-
     public function __construct(
         private readonly RequestInterface $request,
         private readonly Context $httpContext,
         private readonly ScopeConfigInterface $scopeConfig,
         private readonly RouterListInterface $routerList,
+        private readonly array $whitelistedUrls = [],
     ) {
     }
 
@@ -95,7 +85,7 @@ class ResponsePlugin
         $moduleName = $routeInfo['moduleName'] ?? '';
         $moduleAction = $routeInfo['moduleAction'] ?? '';
 
-        foreach (self::WHITELISTED_URLS as $url) {
+        foreach ($this->getWhitelistedUrls() as $url) {
             if ($url['moduleName'] === $moduleName && $url['moduleAction'] === $moduleAction) {
                 // is whitelisted
                 $header = $this->scopeConfig->getValue(
@@ -112,5 +102,27 @@ class ResponsePlugin
             }
         }
         return $proceed();
+    }
+
+    private function getWhitelistedUrls(): array
+    {
+        $urls = [];
+
+        foreach ($this->whitelistedUrls as $moduleName => $config) {
+            if (!is_array($config)
+                || !array_key_exists('enabled', $config)
+                || !array_key_exists('moduleAction', $config)
+                || !$config['enabled']
+            ) {
+                continue;
+            }
+
+            $urls[] = [
+                'moduleName' => $moduleName,
+                'moduleAction' => $config['moduleAction'],
+            ];
+        }
+
+        return $urls;
     }
 }
